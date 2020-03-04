@@ -1,0 +1,13 @@
+setup.py
+livevideo/__init__.py
+livevideo/livevideo.py
+livevideo/static/README.txt
+livevideo/static/css/livevideo.css
+livevideo/static/html/livevideo.html
+livevideo/static/js/src/livevideo.js
+livevideo_xblock.egg-info/PKG-INFO
+livevideo_xblock.egg-info/SOURCES.txt
+livevideo_xblock.egg-info/dependency_links.txt
+livevideo_xblock.egg-info/entry_points.txt
+livevideo_xblock.egg-info/requires.txt
+livevideo_xblock.egg-info/top_level.txt

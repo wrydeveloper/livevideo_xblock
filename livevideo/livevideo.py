@@ -1,3 +1,4 @@
+# -*- coding:utf-8 -*-
 """TO-DO: Write a description of what this XBlock is."""
 import pkg_resources
 import requests
@@ -22,12 +23,6 @@ class LivevideostreamingXBlock(XBlock):
         default='house_number',
         scope=Scope.content,
         help="house number from weihou"
-    )
-    live_type = String(
-        display_name='LIVE_TYPE',
-        default='live_type',
-        scope=Scope.content,
-        help="0 video live and 1 is interactive live"
     )
     student_live_url = String(
         display_name='STUDENT_LIVE_URL',
@@ -65,8 +60,8 @@ class LivevideostreamingXBlock(XBlock):
         # print(xb_user.opt_attrs.get('edx-platform.email'))
         # email = 'hdxuiabcxn@qq.com'
         # username = 'wry'
-        # self.student_live_url = 'https://live.vhall.com/room/embedclient/521181387?email=test%40vhall.com&name=visitor&k=%E9%9A%8F%E6%9C%BA%E5%AD%97%E7%AC%A6%E4%B8%B2&state=%E9%9A%8F%E6%9C%BA%E5%AD%97%E7%AC%A6%E4%B8%B2'
-        # self.teacher_live_url = 'https://e.vhall.com/webinar/new-host/521181387'
+        # self.student_live_url = 'https://live.vhall.com/room/embedclient/435712157?email=test%40vhall.com&name=visitor&k=%E9%9A%8F%E6%9C%BA%E5%AD%97%E7%AC%A6%E4%B8%B2&state=%E9%9A%8F%E6%9C%BA%E5%AD%97%E7%AC%A6%E4%B8%B2'
+        # self.teacher_live_url = 'https://e.vhall.com/webinar/new-host/435712157'
         html = self.resource_string("static/html/livevideo_view.html")
         frag = Fragment(html.format(self=self))
         frag.add_css(self.resource_string("static/css/livevideo.css"))
@@ -84,7 +79,6 @@ class LivevideostreamingXBlock(XBlock):
     @XBlock.json_handler
     def save_live_config(self, data, suffix=''):
         self.house_number = data['house_number']
-        self.live_type = int(data['live_data'])
         user_service = self.runtime.service(self, 'user')
         xb_user = user_service.get_current_user()
         username = xb_user.opt_attrs.get('edx-platform.username')
@@ -102,7 +96,7 @@ class LivevideostreamingXBlock(XBlock):
         
         self.student_live_url = 'https://live.vhall.com/room/embedclient/{house_number}?email={email}&name={username}&k=%E9%9A%8F%E6%9C%BA%E5%AD%97%E7%AC%A6%E4%B8%B2&state=%E9%9A%8F%E6%9C%BA%E5%AD%97%E7%AC%A6%E4%B8%B2'.\
                                 format(house_number=self.house_number, email=email[0], username=username)
-        if self.live_type == 0:
+        if data['live_type'] == '0':
             self.teacher_live_url = 'https://e.vhall.com/webinar/new-host/{house_number}'.format(house_number=self.house_number)
         else:
             self.teacher_live_url = 'https://e.vhall.com/webinar/new-interact/{house_number}'.format(house_number=self.house_number)

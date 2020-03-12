@@ -1,12 +1,13 @@
 <div id="livevideo-big-box">
 	<div class="image-block">
-		<img src="https://dev.academy.poy.cn/asset-v1:ads+cs123+2020_02+type@asset+block@webwxgetmsgimg.jpeg" style="width: 100%;height: 100%"/>
-		<p id="student_live_url" style="display: none">{self.student_live_url}</p>
-		<p id="teacher_live_url" style="display: none">{self.teacher_live_url}</p>
+		<!--<img src="https://dev.academy.poy.cn/asset-v1:ads+cs123+2020_02+type@asset+block@webwxgetmsgimg.jpeg" style="width: 100%;height: 100%"/>-->
+		<img src="/static/images/default_live_cover.jpeg" style="width: 100%;height: 100%" id="live_cover"/>
+		<p id="student_live_url" style="display: none">{{ student_live_url }}</p>
+		<p id="teacher_live_url" style="display: none">{{ teacher_live_url }}</p>
 	</div>
 </div>
 <!--<div class="iframe-container" id="iframe-container">-->
 	<!--<iframe border="0" src="{self.student_live_url}" allow="microphone;camera" class="iframe-box"></iframe>-->
-	<!--<button class="fullscreen">点我</button>-->
+	<!--<button class="fullscreen">click me</button>-->
 <!--</div>-->
 

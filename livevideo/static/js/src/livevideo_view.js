@@ -8,6 +8,7 @@ function LivevideostreamingXBlock(runtime, element) {
         var student_live_url = $('#student_live_url').text();
         var now_host = window.location.host;
         var live_url = '';
+
         if (/^.*\.studio\..*$/.test(now_host)) {
             live_url = teacher_live_url
         } else {
@@ -16,8 +17,8 @@ function LivevideostreamingXBlock(runtime, element) {
         var operation_html = '<div class="iframe-container" id="iframe-container">\n' +
             '\t<iframe border="0" src="'+ live_url +'" allow="microphone;camera" class="iframe-box"></iframe>\n' +
             '\t<button class="fullscreen">点你</button>\n' +
-            '</div>\n'
-        $('#livevideo-big-box').prepend(operation_html)
+            '</div>\n';
+        $('#livevideo-big-box').prepend(operation_html);
         LivevideostreamingXBlock()
     });
 

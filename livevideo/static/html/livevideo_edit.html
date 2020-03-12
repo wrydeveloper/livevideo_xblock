@@ -1,12 +1,23 @@
 <div class="wrapper-comp-settings editor-with-buttons is-active" id="settings-tab">
     <ul class="list-input settings-list">
 
-         <li class="field comp-setting-entry is-set" type="{% if house_number == 100 %} display: none; {% endif %}">
+         <li class="field comp-setting-entry is-set" style="{% if house_number == 100 %} display: none; {% endif %}">
             <div class="wrapper-comp-setting">
                 <label class="label setting-label" for="house_number">House Number</label>
                 <input class="input setting-input" id="house_number" value="{{ house_number }}" type="text"  readonly="readonly">
             </div>
             <span class="tip setting-help">Live room number, Prohibit modification</span>
+        </li>
+
+        <li class="field comp-setting-entry is-set">
+            <div class="wrapper-comp-setting">
+                <label class="label setting-label" for="player">Player</label>
+                <select class="input setting-input" id="player">
+                    <option value="1" {% if player == 1 %}selected{% endif %}>flash player</option>
+                    <option value="2" {% if player == 2 %}selected{% endif %}>h5 player</option>
+                </select>
+            </div>
+            <span class="tip setting-help">player type</span>
         </li>
 
         <li class="field comp-setting-entry is-set">
@@ -22,13 +33,13 @@
 
         <li class="field comp-setting-entry is-set">
             <div class="wrapper-comp-setting">
-                <label class="label setting-label" for="player">Player</label>
-                <select class="input setting-input" id="player" {% if house_number != 100 %} disabled="disabled" {% endif %}>
-                    <option value="1" {% if player == 1 %}selected{% endif %}>flash player</option>
-                    <option value="2" {% if player == 2 %}selected{% endif %}>h5 player</option>
+                <label class="label setting-label" for="is_new_version">Is New Version</label>
+                <select class="input setting-input" id="is_new_version">
+                    <option value="0" {% if is_new_version == 0 %}selected{% endif %}>old layout</option>
+                    <option value="1" {% if is_new_version == 1 %}selected{% endif %}>new layout</option>
                 </select>
             </div>
-            <span class="tip setting-help">player type</span>
+            <span class="tip setting-help">old layout or new layout</span>
         </li>
 
         <li class="field comp-setting-entry is-set" >
@@ -40,9 +51,9 @@
         </li>
 
         <li class="field comp-setting-entry is-set" >
-            <div class="wrapper-comp-setting">
+            <div class="wrapper-comp-setting" id="start_time_box">
                 <label class="label setting-label" for="start_time">Start Time</label>
-                <input class="input setting-input" id="start_time" type="text" value="{{ start_time }}">
+                <input class="input setting-input" id="start_time" type="text" value="{{ start_time }}" placeholder="YYYY-MM-DD hh:mm:ss">
             </div>
             <span class="tip setting-help">Live start time, type: YYYY-MM-DD HH:mm:SS, For example: 2020-01-01 12:00:00</span>
         </li>

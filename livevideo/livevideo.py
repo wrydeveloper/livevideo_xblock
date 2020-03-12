@@ -1,23 +1,17 @@
 # -*- coding:utf-8 -*-
-"""TO-DO: Write a description of what this XBlock is."""
+import time
 import pkg_resources
 import requests
 from web_fragments.fragment import Fragment
 from xblock.core import XBlock
 from xblock.fields import Integer, Scope, String
 from django.template import Context, Template
+from wh_live import WH_live
 
 
 @XBlock.wants('user')
 class LivevideostreamingXBlock(XBlock):
-    """
-    TO-DO: document what your XBlock does.
-    """
 
-    # Fields are defined on the class.  You can access them in your code as
-    # self.<fieldname>.
-
-    # TO-DO: delete count, and define your own fields.
     icon_class = 'video'
     house_number = Integer(
         display_name='HOUSE_NUMBER',
@@ -41,7 +35,7 @@ class LivevideostreamingXBlock(XBlock):
     )
     layout = Integer(
         display_name='LAYOUT',
-        default=1,
+        default=3,
         scope=Scope.content,
         help='1 single video, 2 single doc, 3 doc and video'
     )
@@ -89,11 +83,6 @@ class LivevideostreamingXBlock(XBlock):
         help='hidden msg'
     )
 
-    def resource_string(self, path):
-        """Handy helper for getting resources from our kit."""
-        data = pkg_resources.resource_string(__name__, path)
-        return data.decode("utf8")
-
     def load_resource(self, resource_path):
         """
         Gets the content of a resource
@@ -110,16 +99,21 @@ class LivevideostreamingXBlock(XBlock):
 
     # TO-DO: change this view to display your data your own way.
     def student_view(self, context=None):
-        """
-        The primary view of the LivevideostreamingXBlock, shown to students
-        when viewing courses.
-        """
-        # self.student_live_url = 'https://live.vhall.com/room/embedclient/435712157?email=test%40vhall.com&name=visitor&k=%E9%9A%8F%E6%9C%BA%E5%AD%97%E7%AC%A6%E4%B8%B2&state=%E9%9A%8F%E6%9C%BA%E5%AD%97%E7%AC%A6%E4%B8%B2'
-        # self.teacher_live_url = 'https://e.vhall.com/webinar/new-host/435712157'
-        html = self.resource_string("static/html/livevideo_view.html")
-        frag = Fragment(html.format(self=self))
-        frag.add_css(self.resource_string("static/css/livevideo.css"))
-        frag.add_javascript(self.resource_string("static/js/src/livevideo_view.js"))
+        user_service = self.runtime.service(self, 'user')
+        xb_user = user_service.get_current_user()
+        username = xb_user.opt_attrs.get('edx-platform.username')
+        email = xb_user.emails
+        student_live_url = self.student_live_url
+        student_live_url = student_live_url.replace('@email@', '{email}').replace('@username@', '{username}')
+        context = {
+            'teacher_live_url': self.teacher_live_url,
+            'student_live_url': student_live_url.format(email=email[0], username=username),
+        }
+        
+        html = self.render_template("static/html/livevideo_view.html", context)
+        frag = Fragment(html)
+        frag.add_css(self.load_resource("static/css/livevideo.css"))
+        frag.add_javascript(self.load_resource("static/js/src/livevideo_view.js"))
         frag.initialize_js('LivevideostreamingXBlock')
         return frag
     
@@ -135,45 +129,53 @@ class LivevideostreamingXBlock(XBlock):
             'layout': self.layout,
             'topics': self.topics,
             'is_chat': self.is_chat,
-            'auto_record': self.auto_record
+            'auto_record': self.auto_record,
+            'is_new_version': self.is_new_version
         }
         
         html = self.render_template('static/html/livevideo_edit.html', context)
         frag = Fragment(html)
-        frag.add_css(self.resource_string("static/css/jquery.cxcalendar.css"))
-        frag.add_javascript(self.resource_string("static/js/src/jquery.cxcalendar.js"))
-        frag.add_javascript(self.resource_string("static/js/src/livevideo_edit.js"))
+        frag.add_css(self.load_resource("static/css/calendar.min.css"))
+        frag.add_javascript(self.load_resource("static/js/src/livevideo_edit.js"))
+        frag.add_javascript(self.load_resource("static/js/src/calendar.min.js"))
         frag.initialize_js('LivevideoEditXBlock')
         return frag
 
     @XBlock.json_handler
     def save_live_config(self, data, suffix=''):
-        if 'house_number' in data or data['house_number'] != 100:
-            self.house_number = data['house_number']
+        for name in ['subject', 'player', 'start_time', 'introduction', 'layout', 'topics', 'is_chat', 'auto_record', 'is_new_version', 'is_interact']:
+            if name in data:
+                exec("self.{} = data['{}']".format(name, name))
         
-        user_service = self.runtime.service(self, 'user')
-        xb_user = user_service.get_current_user()
-        username = xb_user.opt_attrs.get('edx-platform.username')
-        email = xb_user.emails
-        
-        # username, password = self._getweihou_userinfo()
-        # wh = WH_live(username, password)
-        # param = {
-        #     'subject': '测试直播创建直播接口',
-        #     'start_time': int(time.time())
-        # }
-        # house_number = wh.create_live_house(param)
-        # if house_number is None:
-        #     house_number = self.house_number
-        
-        self.student_live_url = 'https://live.vhall.com/room/embedclient/{house_number}?email={email}&name={username}&k=%E9%9A%8F%E6%9C%BA%E5%AD%97%E7%AC%A6%E4%B8%B2&state=%E9%9A%8F%E6%9C%BA%E5%AD%97%E7%AC%A6%E4%B8%B2'.\
-                                format(house_number=self.house_number, email=email[0], username=username)
-        if data['live_type'] == '0':
-            self.teacher_live_url = 'https://e.vhall.com/webinar/new-host/{house_number}'.format(house_number=self.house_number)
+        username = 's45311060'
+        password = 'wry19950107'
+        wh = WH_live(username, password)
+        data['start_time'] = int(time.mktime(time.strptime(str(data['start_time']), "%Y-%m-%d %H:%M:%S")))
+        if 'house_number' not in data or data['house_number'] == 100:
+            res = wh.create_live_house(data)
+            if res is not None:
+                self.house_number = res
+            else:
+                return {'msg': 'Failed create live', 'status': 10001, 'data': ''}
         else:
-            self.teacher_live_url = 'https://e.vhall.com/webinar/new-interact/{house_number}'.format(house_number=self.house_number)
-        
-        return {'msg': 'success'}
+            data['webinar_id'] = self.house_number
+            wh.update_live_house(data)
+    
+        param = {}
+        param['webinar_id'] = self.house_number
+        param['is_interact'] = self.is_interact
+        teacher_url = wh.get_live_url(param)
+        if teacher_url:
+            if teacher_url.startswith('http'):
+                teacher_url = teacher_url.replace('http', 'https')
+            self.teacher_live_url = teacher_url
+        else:
+            return {'msg': 'failed to get live url', 'status': 10002, 'data': ''}
+    
+        self.student_live_url = 'https://live.vhall.com/room/embedclient/{house_number}?email=@email@&name=@username@&k=%E9%9A%8F%E6%9C%BA%E5%AD%97%E7%AC%A6%E4%B8%B2&state=%E9%9A%8F%E6%9C%BA%E5%AD%97%E7%AC%A6%E4%B8%B2'. \
+            format(house_number=self.house_number)
+    
+        return {'msg': 'success', 'status': 10000, 'data': ''}
     
     def _getweihou_userinfo(self):
         url = 'localhost:8000/api/v1/weihouaccount/'

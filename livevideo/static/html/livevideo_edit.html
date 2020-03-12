@@ -1,22 +1,101 @@
 <div class="wrapper-comp-settings editor-with-buttons is-active" id="settings-tab">
     <ul class="list-input settings-list">
 
-         <li class="field comp-setting-entry is-set">
+         <li class="field comp-setting-entry is-set" type="{% if house_number == 100 %} display: none; {% endif %}">
             <div class="wrapper-comp-setting">
-                <label class="label setting-label" for="house_number">house number</label>
-                <input class="input setting-input" id="house_number" value="{self.house_number}" type="text">
+                <label class="label setting-label" for="house_number">House Number</label>
+                <input class="input setting-input" id="house_number" value="{{ house_number }}" type="text"  readonly="readonly">
             </div>
-            <span class="tip setting-help">A house number from weihou</span>
+            <span class="tip setting-help">Live room number, Prohibit modification</span>
         </li>
 
         <li class="field comp-setting-entry is-set">
             <div class="wrapper-comp-setting">
-                <label class="label setting-label" for="live_type">live type</label>
-                <input class="input setting-input" id="live_type" value="" type="text">
+                <label class="label setting-label" for="is_interact">Is Interacte</label>
+                <select class="input setting-input" id="is_interact">
+                    <option value="0" {% if is_interact == 0 %}selected{% endif %}>video live</option>
+                    <option value="1" {% if is_interact == 1 %}selected{% endif %}>interact live</option>
+                </select>
             </div>
-            <span class="tip setting-help">0 video live and 1 is interactive live</span>
+            <span class="tip setting-help">Choose live type</span>
         </li>
 
+        <li class="field comp-setting-entry is-set">
+            <div class="wrapper-comp-setting">
+                <label class="label setting-label" for="player">Player</label>
+                <select class="input setting-input" id="player" {% if house_number != 100 %} disabled="disabled" {% endif %}>
+                    <option value="1" {% if player == 1 %}selected{% endif %}>flash player</option>
+                    <option value="2" {% if player == 2 %}selected{% endif %}>h5 player</option>
+                </select>
+            </div>
+            <span class="tip setting-help">player type</span>
+        </li>
+
+        <li class="field comp-setting-entry is-set" >
+            <div class="wrapper-comp-setting">
+                <label class="label setting-label" for="subject">Subject</label>
+                <input class="input setting-input" id="subject" type="text" value="{{ subject }}">
+            </div>
+            <span class="tip setting-help">subject name, Must be less than 30 characters</span>
+        </li>
+
+        <li class="field comp-setting-entry is-set" >
+            <div class="wrapper-comp-setting">
+                <label class="label setting-label" for="start_time">Start Time</label>
+                <input class="input setting-input" id="start_time" type="text" value="{{ start_time }}">
+            </div>
+            <span class="tip setting-help">Live start time, type: YYYY-MM-DD HH:mm:SS, For example: 2020-01-01 12:00:00</span>
+        </li>
+
+        <li class="field comp-setting-entry is-set" >
+            <div class="wrapper-comp-setting">
+                <label class="label setting-label" for="introduction">Introduction</label>
+                <input class="input setting-input" id="introduction" type="text" value="{{ introduction }}">
+            </div>
+            <span class="tip setting-help">Live introduction, Must be less than 1024 character</span>
+        </li>
+
+        <li class="field comp-setting-entry is-set" >
+            <div class="wrapper-comp-setting">
+                <label class="label setting-label" for="layout">Layout</label>
+                <select class="input setting-input" id="layout">
+                    <option value="1" {% if layout == 1 %}selected{% endif %}>video</option>
+                    <option value="2" {% if layout == 2 %}selected{% endif %}>doc</option>
+                    <option value="3" {% if layout == 3 %}selected{% endif %}>doc and video</option>
+                </select>
+            </div>
+            <span class="tip setting-help">support video layout , doc layout, video and doc layout</span>
+        </li>
+
+        <li class="field comp-setting-entry is-set" >
+            <div class="wrapper-comp-setting">
+                <label class="label setting-label" for="topics">Topics</label>
+                <input class="input setting-input" id="topics" type="text" value="{{ topics }}">
+            </div>
+            <span class="tip setting-help">Live Topic Tag Field, Must be divided by `,`(Comma),For example: A,B,C</span>
+        </li>
+
+        <li class="field comp-setting-entry is-set" >
+            <div class="wrapper-comp-setting">
+                <label class="label setting-label" for="is_chat">Is Chat</label>
+                <select class="input setting-input" id="is_chat">
+                    <option value="0" {% if is_chat == 0 %}selected{% endif %}>Start chat</option>
+                    <option value="1" {% if is_chat == 1 %}selected{% endif %}>Close chat</option>
+                </select>
+            </div>
+            <span class="tip setting-help">Start chat in live or close it</span>
+        </li>
+
+        <li class="field comp-setting-entry is-set" >
+            <div class="wrapper-comp-setting">
+                <label class="label setting-label" for="auto_record">Auto Record</label>
+                <select class="input setting-input" id="auto_record">
+                    <option value="0" {% if is_chat == 0 %}selected{% endif %}>Close auto record</option>
+                    <option value="1" {% if is_chat == 1 %}selected{% endif %}>Start auto record</option>
+                </select>
+            </div>
+            <span class="tip setting-help">Start auto record in live or close it</span>
+        </li>
     </ul>
 
     <div class="xblock-actions">

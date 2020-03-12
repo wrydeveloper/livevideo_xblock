@@ -7,7 +7,8 @@ import logging
 log = logging.getLogger(__name__)
 
 CREATE_LIVE_URL = 'http://e.vhall.com/api/vhallapi/v2/webinar/create'
-
+DELETE_LIVE_URL = 'http://e.vhall.com/api/vhallapi/v2/webinar/delete'
+UPLOAD_FILE_URL= 'http://e.vhall.com/api/vhallapi/v2/webinar/doc'
 
 common_param = {
         'auth_type': 1,
@@ -35,8 +36,20 @@ create_live_param = {
     #'is_allow_extension': 1 # 默认为1表示开启并发扩展包，传其他参数表示不开启，流量套餐或没有并发扩展包时忽略此参数
 }
 
-create_live_error_code = {}
+delete_live_param = {
+    'webinar_id': 0
+}
 
+upload_file_param = {
+    'webinar_id': 0
+}
+
+
+try:
+    with open('wh_error_code.json', 'r+') as f:
+        error_code = json.load(f)
+except Exception as e:
+    error_code = {}
 
 class WH_live(object):
     
@@ -50,35 +63,70 @@ class WH_live(object):
         common_param['password'] = self._password
         
     def create_live_house(self, param={}):
+        '''
+        :param param:
+        :return: house number or None
+        '''
         for key in param:
             if key in create_live_param.keys():
                 create_live_param[key] = param[key]
         
         param = dict(create_live_param.items() + common_param.items())
-        res = self.request_data_by_post(CREATE_LIVE_URL, param)
-        if 'code' in res and res['code'] == 200:
-            return res['data']
+        res_data = self.request_data_by_post(CREATE_LIVE_URL, param)
+        return res_data
+    
+    def delete_live_house(self, house_number):
+        '''
+        :param house_number:
+        :return: house number or None
+        '''
+        delete_live_param['webinar_id'] = house_number
+        param = dict(delete_live_param.items() + common_param.items())
+        res_data = self.request_data_by_post(DELETE_LIVE_URL, param)
+        return res_data
+    
+    def post_file_to_video(self, house_number, file_path):
+        '''
+        :param house_number:
+        :param file_path:
+        :return: [] or None
+        '''
+        files = {'resfile': open(file_path, 'rb')}
+        upload_file_param['webinar_id'] = house_number
+        upload_file_param['resfile'] = open(file_path, 'rb')
+        param = dict(upload_file_param.items() + common_param.items())
+        res_data = self.request_data_by_post(UPLOAD_FILE_URL, param, files=files)
+        return res_data
+
+    def request_data_by_post(self, url, data, files={}):
+        if files:
+            res = requests.post(url, files=files, data=data)
         else:
-            print(create_live_error_code[res['code']])
-            return None
-            
-    def request_data_by_post(self, url, data):
-        res = requests.post(url, data=data)
-        log.info(res.content)
+            res = requests.post(url, data=data)
         try:
             res = json.loads(res.content)
         except Exception as e:
             log.info(e)
             res = {}
+        
+        if 'code' in res and res['code'] == '200':
+            return res['data']
+        else:
+            if str(res['code']) in error_code.keys():
+                print(error_code[str(res['code'])].encode('utf-8'))
+            else:
+                print(res['msg'])
+            return None
             
-        return res
-            
-# if __name__ == '__main__':
-#     username = 'v18250150'
-#     password = '8014311'
-#     wh = WH_live(username, password)
-#     param = {
-#         'subject': '测试直播创建直播接口',
-#         'start_time': int(time.time())
-#     }
-#     wh.create_live_house(param)
+if __name__ == '__main__':
+    username = 's45311060'
+    password = 'wry19950107'
+    # username = 's45011331'
+    # password = '19880419'
+    wh = WH_live(username, password)
+    param = {
+        'subject': '测试直播创建直播接口',
+        'start_time': int(time.time())
+    }
+    wh.create_live_house(param)
+    # wh.post_file_to_video(602352767, './python.pdf')

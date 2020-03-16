@@ -15,8 +15,8 @@ function LivevideostreamingXBlock(runtime, element) {
             live_url = student_live_url
         }
         var operation_html = '<div class="iframe-container" id="iframe-container">\n' +
-            '\t<iframe border="0" src="'+ live_url +'" allow="microphone;camera" class="iframe-box"></iframe>\n' +
-            '\t<button class="fullscreen">点你</button>\n' +
+            '\t<iframe border="0" allowfullscreen="true" src="'+ live_url +'" allow="microphone;camera" class="iframe-box"></iframe>\n' +
+            '\t<button class="fullscreen">click me</button>\n' +
             '</div>\n';
         $('#livevideo-big-box').prepend(operation_html);
         LivevideostreamingXBlock()

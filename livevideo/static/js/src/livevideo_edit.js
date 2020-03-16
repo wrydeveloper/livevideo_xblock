@@ -92,7 +92,7 @@ function LivevideoEditXBlock(runtime, element) {
         data['auto_record'] = $('#auto_record').val();
         console.log(data);
 
-        var handlerUrl = runtime.handlerUrl(element, 'save_live_config');
+        var saveconfig_url = runtime.handlerUrl(element, 'save_live_config');
         // var handlerUrl = 'http://127.0.0.1:8001/save_live_config/'
         // $.ajax({
         //     url: handlerUrl,
@@ -103,7 +103,7 @@ function LivevideoEditXBlock(runtime, element) {
         //         console.log(info)
         //     }
         // })
-        $.post(handlerUrl, JSON.stringify(data)).done(function(response) {
+        $.post(saveconfig_url, JSON.stringify(data)).done(function(response) {
             if (response.status === 10000) {
                 // Reload the whole page :
                 window.location.reload(true);
@@ -111,6 +111,39 @@ function LivevideoEditXBlock(runtime, element) {
                 alert(response.msg)
             }
         });
+    });
+    $(element).find('#upload_cover').bind('click', function () {
+        var get_upload_url = runtime.handlerUrl(element, 'get_upload_cover_url');
+        var now_host = window.location.host;
+        var upload_file_url = '';
+        $.ajax({
+            url: get_upload_url,
+            type: 'get',
+            dataType: "json",
+            async: false,
+            success: function (info) {
+                if (info.msg == 'success') {
+                    upload_file_url = now_host + info.data.url;
+                }
+            }
+        });
+        $('#live_image_cover').val(upload_file_url);
+
+        var formData = new FormData();
+        formData.append('file', $('#live_image_cover')[0].files[0])
+
+        $.ajax({
+            url:  upload_file_url,
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function (info) {
+                console.log(info.msg);
+                $('#live_image_cover').val(info.portable_url)
+                
+            }
+        });
+
     });
 
 }

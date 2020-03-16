@@ -13,11 +13,17 @@ from wh_live import WH_live
 class LivevideostreamingXBlock(XBlock):
 
     icon_class = 'video'
+    live_image_cover = String(
+        display_name='LIVE_IMAGE_COVER',
+        default='/static/images/default_live_cover.jpeg',
+        scope=Scope.content,
+        help='Course Live Cover, Show to student'
+    )
     house_number = Integer(
         display_name='HOUSE_NUMBER',
         default=100,
         scope=Scope.content,
-        help="house number from weihou"
+        help='house number from weihou'
     )
     is_interact = Integer(default=0, scope=Scope.content, help="0 is video and 1 is interact")
     player = Integer(default=1 ,scope=Scope.content, help="player type include h5 and flash player")
@@ -130,7 +136,8 @@ class LivevideostreamingXBlock(XBlock):
             'topics': self.topics,
             'is_chat': self.is_chat,
             'auto_record': self.auto_record,
-            'is_new_version': self.is_new_version
+            'is_new_version': self.is_new_version,
+            'live_image_cover': self.live_image_cover
         }
         
         html = self.render_template('static/html/livevideo_edit.html', context)
@@ -176,6 +183,14 @@ class LivevideostreamingXBlock(XBlock):
             format(house_number=self.house_number)
     
         return {'msg': 'success', 'status': 10000, 'data': ''}
+
+    @XBlock.json_handler
+    def get_upload_cover_url(self, data, suffix=''):
+        url = 'assets/' + self.course_id
+        data = {
+            'url': url
+        }
+        return {'msg': 'success', 'status': 10000, 'data': data}
     
     def _getweihou_userinfo(self):
         url = 'localhost:8000/api/v1/weihouaccount/'

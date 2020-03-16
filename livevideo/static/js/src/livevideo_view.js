@@ -16,14 +16,14 @@ function LivevideostreamingXBlock(runtime, element) {
         }
         var operation_html = '<div class="iframe-container" id="iframe-container">\n' +
             '\t<iframe border="0" allowfullscreen="true" src="'+ live_url +'" allow="microphone;camera" class="iframe-box"></iframe>\n' +
-            '\t<button class="fullscreen">click me</button>\n' +
+            '\t<button class="fullscreen">Full Screen</button>\n' +
             '</div>\n';
         $('#livevideo-big-box').prepend(operation_html);
-        LivevideostreamingXBlock()
+        LivevideostreamingXBlock();
     });
 
     $('.fullscreen', element).click(function(eventObject) {
-        var iframe = document.querySelector('#iframe-container');
+        var iframe = document.querySelector('.iframe-box');
         var isInFullScreen = (document.fullscreenElement && document.fullscreenElement !== null) ||
         (document.webkitFullscreenElement && document.webkitFullscreenElement !== null) ||
         (document.mozFullScreenElement && document.mozFullScreenElement !== null) ||
@@ -50,6 +50,5 @@ function LivevideostreamingXBlock(runtime, element) {
                 document.msExitFullscreen();
             }
         }
-
     });
 }

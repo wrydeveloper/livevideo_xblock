@@ -111,8 +111,10 @@
         <li class="field comp-setting-entry is-set" >
             <div class="wrapper-comp-setting">
                 <label class="label setting-label" for="live_image_cover">live image cover</label>
-                <input type="file" name="live_image_cover" id="live_image_cover" value="{{ live_image_cover }}" placeholder="">
+                <input type="file" name="live_image_cover" id="live_image_cover" value="" placeholder="" accept=".png,.jpg,.jpeg,.gif">
                 <button id="upload_cover">upload file</button>
+                <p>current course cover:</p>
+                <img src="{{ live_image_cover }}" style="width: 200px; height: 150px;" id="live_image_cover_show">
             </div>
             <span class="tip setting-help">Live image cover</span>
         </li>

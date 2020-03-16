@@ -1,12 +1,4 @@
 function LivevideoEditXBlock(runtime, element) {
-    // xvDate({
-    //     'targetId':'start_time',//时间写入对象的id
-    //     'triggerId':['start_time'],//触发事件的对象id
-    //     'alignId':'start_time_box',//日历对齐对象
-    //     'format':'-',//时间格式 默认'YYYY-MM-DD HH:MM:SS'
-    //     'min':'1970-01-01 10:00:00',//最大时间
-    //     'max':'2099-01-30 10:00:00'//最小时间
-    // });
     var layout_select = $("#layout").clone();
     var layout_option_video = layout_select.find("option[value=1]").clone();
     var layout_option_doc = layout_select.find("option[value=2]").clone();
@@ -70,6 +62,16 @@ function LivevideoEditXBlock(runtime, element) {
     $(element).find('#player, #is_interact, #is_new_version').bind('change', function () {
         change_status($(this).attr("id"));
     });
+    
+    $(element).find('#live_image_cover').bind('change', function () {
+        let file = $("#live_image_cover").val();
+        if (file) {
+            let filename = file.substr(file.lastIndexOf("."));
+            if(filename != '.png' && filename != '.jpg' && filename != '.jpeg' && filename != '.gif'){
+               alert("please upload image of .png,.jpg,.jpeg,.gif");
+            }
+        }
+    });
     $(element).find('.action-save').bind('click', function() {
         var data = {}
         if ($('#house_number').val() != 100) {
@@ -78,7 +80,7 @@ function LivevideoEditXBlock(runtime, element) {
             data['player'] = $('#player').val();
         }
         if ($('#subject').val() == '') {
-            alert('标题不能为空');
+            alert('subject cannot be empty');
         }
 
         data['is_new_version'] = $('#is_new_version').val();
@@ -90,6 +92,7 @@ function LivevideoEditXBlock(runtime, element) {
         data['topics'] = $('#topics').val();
         data['is_chat'] = $('#is_chat').val();
         data['auto_record'] = $('#auto_record').val();
+        data['live_image_cover'] = $('#live_image_cover_show').attr("src");
         console.log(data);
 
         var saveconfig_url = runtime.handlerUrl(element, 'save_live_config');
@@ -108,26 +111,30 @@ function LivevideoEditXBlock(runtime, element) {
                 // Reload the whole page :
                 window.location.reload(true);
             } else {
-                alert(response.msg)
+                alert(response.msg);
             }
         });
     });
     $(element).find('#upload_cover').bind('click', function () {
         var get_upload_url = runtime.handlerUrl(element, 'get_upload_cover_url');
         var now_host = window.location.host;
+        var protocolStr = document.location.protocol;
+
         var upload_file_url = '';
+        var data = {};
         $.ajax({
             url: get_upload_url,
-            type: 'get',
+            type: 'post',
+            data: JSON.stringify(data),
             dataType: "json",
             async: false,
             success: function (info) {
                 if (info.msg == 'success') {
-                    upload_file_url = now_host + info.data.url;
+                    upload_file_url = protocolStr + '//' + now_host + info.data.url;
                 }
             }
         });
-        $('#live_image_cover').val(upload_file_url);
+        $('#cover_image_info').val(upload_file_url);
 
         var formData = new FormData();
         formData.append('file', $('#live_image_cover')[0].files[0])
@@ -135,12 +142,14 @@ function LivevideoEditXBlock(runtime, element) {
         $.ajax({
             url:  upload_file_url,
             data: formData,
+            type: "post",
             contentType: false,
             processData: false,
             success: function (info) {
                 console.log(info.msg);
-                $('#live_image_cover').val(info.portable_url)
-                
+                var external_url = protocolStr + '//' + info.asset.external_url
+                console.log(external_url);
+                $('#live_image_cover_show').attr('src', external_url);
             }
         });
 

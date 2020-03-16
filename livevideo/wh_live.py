@@ -167,7 +167,7 @@ class WH_live(object):
             if str(res['code']) in error_code.keys():
                 log(error_code[str(res['code'])].encode('utf-8'))
             else:
-                log(res['msg'])
+                log(str(res['msg']))
             return None
             
 # if __name__ == '__main__':

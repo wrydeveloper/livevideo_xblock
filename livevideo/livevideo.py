@@ -1,5 +1,7 @@
 # -*- coding:utf-8 -*-
 import time
+import json
+import logging
 import pkg_resources
 import requests
 from web_fragments.fragment import Fragment
@@ -8,6 +10,8 @@ from xblock.fields import Integer, Scope, String
 from django.template import Context, Template
 from wh_live import WH_live
 
+
+log = logging.getLogger(__name__)
 
 @XBlock.wants('user')
 class LivevideostreamingXBlock(XBlock):
@@ -112,6 +116,7 @@ class LivevideostreamingXBlock(XBlock):
         student_live_url = self.student_live_url
         student_live_url = student_live_url.replace('@email@', '{email}').replace('@username@', '{username}')
         context = {
+            'live_image_cover': self.live_image_cover,
             'teacher_live_url': self.teacher_live_url,
             'student_live_url': student_live_url.format(email=email[0], username=username),
         }
@@ -144,18 +149,17 @@ class LivevideostreamingXBlock(XBlock):
         frag = Fragment(html)
         frag.add_css(self.load_resource("static/css/calendar.min.css"))
         frag.add_javascript(self.load_resource("static/js/src/livevideo_edit.js"))
-        frag.add_javascript(self.load_resource("static/js/src/calendar.min.js"))
+        # frag.add_javascript(self.load_resource("static/js/src/calendar.min.js"))
         frag.initialize_js('LivevideoEditXBlock')
         return frag
 
     @XBlock.json_handler
     def save_live_config(self, data, suffix=''):
-        for name in ['subject', 'player', 'start_time', 'introduction', 'layout', 'topics', 'is_chat', 'auto_record', 'is_new_version', 'is_interact']:
+        for name in ['subject', 'player', 'start_time', 'introduction', 'layout', 'topics', 'is_chat', 'auto_record', 'is_new_version', 'is_interact', 'live_image_cover']:
             if name in data:
                 exec("self.{} = data['{}']".format(name, name))
         
-        username = 's45311060'
-        password = 'wry19950107'
+        username, password = self._getweihou_userinfo()
         wh = WH_live(username, password)
         data['start_time'] = int(time.mktime(time.strptime(str(data['start_time']), "%Y-%m-%d %H:%M:%S")))
         if 'house_number' not in data or data['house_number'] == 100:
@@ -186,17 +190,18 @@ class LivevideostreamingXBlock(XBlock):
 
     @XBlock.json_handler
     def get_upload_cover_url(self, data, suffix=''):
-        url = 'assets/' + self.course_id
+        url = '/assets/' + str(self.course_id) + '/'
         data = {
             'url': url
         }
         return {'msg': 'success', 'status': 10000, 'data': data}
     
     def _getweihou_userinfo(self):
-        url = 'localhost:8000/api/v1/weihouaccount/'
+        url = 'http://localhost:8000/api/v1/weihouaccount/'
         res = requests.get(url)
-        content = res.content
-        if content['res'] == 'success':
+        content = json.loads(res.content)
+        log.info(content)
+        if content['status'] == 10001:
             return content['data']['username'], content['data']['password']
 
     @staticmethod
